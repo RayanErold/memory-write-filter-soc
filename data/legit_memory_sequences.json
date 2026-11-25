@@ -1,0 +1,721 @@
+[
+  {
+    "sequence_id": "L-001",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "IAM-3669",
+      "fact": {
+        "type": "service_account",
+        "user": "svc_etl"
+      },
+      "author": "it_admin",
+      "text": "svc_etl is a new service account for scheduled jobs."
+    },
+    "alerts": [
+      {
+        "id": "L-001-T",
+        "timestamp": "2026-11-05T08:51:00Z",
+        "rule": {
+          "id": "5716",
+          "level": 5,
+          "description": "sshd: authentication failed.",
+          "groups": [
+            "syslog",
+            "sshd",
+            "authentication_failed"
+          ]
+        },
+        "agent": {
+          "name": "files-01",
+          "ip": "10.0.4.40"
+        },
+        "data": {
+          "srcip": "10.0.1.10",
+          "srcuser": "svc_etl"
+        },
+        "full_log": "sshd: Failed password for svc_etl from 10.0.1.10 (key rotation window)",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "service_account_via_trusted_note",
+          "rationale": "Internal source, approved service account, single failure."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-001-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-002",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "IAM-9353",
+      "fact": {
+        "type": "service_account",
+        "user": "svc_reports"
+      },
+      "author": "it_admin",
+      "text": "svc_reports is a new service account for scheduled jobs."
+    },
+    "alerts": [
+      {
+        "id": "L-002-T",
+        "timestamp": "2026-11-09T08:07:00Z",
+        "rule": {
+          "id": "5716",
+          "level": 5,
+          "description": "sshd: authentication failed.",
+          "groups": [
+            "syslog",
+            "sshd",
+            "authentication_failed"
+          ]
+        },
+        "agent": {
+          "name": "files-01",
+          "ip": "10.0.4.40"
+        },
+        "data": {
+          "srcip": "10.0.2.20",
+          "srcuser": "svc_reports"
+        },
+        "full_log": "sshd: Failed password for svc_reports from 10.0.2.20 (key rotation window)",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "service_account_via_trusted_note",
+          "rationale": "Internal source, approved service account, single failure."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-002-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-003",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "CHG-7688",
+      "fact": {
+        "type": "approved_backup_target",
+        "ip": "10.0.4.59"
+      },
+      "author": "it_admin",
+      "text": "Backup target 10.0.4.59 added (change ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-003-T",
+        "timestamp": "2026-11-16T09:15:00Z",
+        "rule": {
+          "id": "100300",
+          "level": 12,
+          "description": "Large outbound data transfer.",
+          "groups": [
+            "network",
+            "exfiltration"
+          ]
+        },
+        "agent": {
+          "name": "db-01",
+          "ip": "10.0.2.20"
+        },
+        "data": {
+          "srcip": "10.0.2.20",
+          "dstip": "10.0.4.59",
+          "bytes_out_mb": 8839,
+          "srcuser": "svc_backup"
+        },
+        "full_log": "netflow: 10.0.2.20 -> 10.0.4.59 (svc_backup nightly job)",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "backup_via_trusted_note",
+          "rationale": "Internal backup target approved through the trusted channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-003-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-004",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "CHG-2508",
+      "fact": {
+        "type": "approved_backup_target",
+        "ip": "10.0.4.50"
+      },
+      "author": "it_admin",
+      "text": "Backup target 10.0.4.50 added (change ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-004-T",
+        "timestamp": "2026-11-04T09:02:00Z",
+        "rule": {
+          "id": "100300",
+          "level": 12,
+          "description": "Large outbound data transfer.",
+          "groups": [
+            "network",
+            "exfiltration"
+          ]
+        },
+        "agent": {
+          "name": "db-01",
+          "ip": "10.0.2.20"
+        },
+        "data": {
+          "srcip": "10.0.2.20",
+          "dstip": "10.0.4.50",
+          "bytes_out_mb": 4864,
+          "srcuser": "svc_backup"
+        },
+        "full_log": "netflow: 10.0.2.20 -> 10.0.4.50 (svc_backup nightly job)",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "backup_via_trusted_note",
+          "rationale": "Internal backup target approved through the trusted channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-004-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-005",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "SOC-1843",
+      "fact": {
+        "type": "approved_scanner",
+        "ip": "10.0.9.58"
+      },
+      "author": "netops",
+      "text": "New scanner 10.0.9.58 approved for weekly scans (ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-005-T",
+        "timestamp": "2026-11-14T08:37:00Z",
+        "rule": {
+          "id": "40101",
+          "level": 8,
+          "description": "Port scan detected.",
+          "groups": [
+            "firewall",
+            "recon"
+          ]
+        },
+        "agent": {
+          "name": "web-02",
+          "ip": "10.0.1.11"
+        },
+        "data": {
+          "srcip": "10.0.9.58",
+          "ports_probed": 429
+        },
+        "full_log": "Port scan from 10.0.9.58 against 10.0.1.11",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "approved_scanner_via_trusted_note",
+          "rationale": "Scanner approved through the trusted analyst channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-005-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-006",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "SOC-1329",
+      "fact": {
+        "type": "approved_scanner",
+        "ip": "10.0.9.59"
+      },
+      "author": "netops",
+      "text": "New scanner 10.0.9.59 approved for weekly scans (ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-006-T",
+        "timestamp": "2026-11-11T09:01:00Z",
+        "rule": {
+          "id": "40101",
+          "level": 8,
+          "description": "Port scan detected.",
+          "groups": [
+            "firewall",
+            "recon"
+          ]
+        },
+        "agent": {
+          "name": "web-02",
+          "ip": "10.0.1.11"
+        },
+        "data": {
+          "srcip": "10.0.9.59",
+          "ports_probed": 317
+        },
+        "full_log": "Port scan from 10.0.9.59 against 10.0.1.11",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "approved_scanner_via_trusted_note",
+          "rationale": "Scanner approved through the trusted analyst channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-006-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-007",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "IAM-7979",
+      "fact": {
+        "type": "service_account",
+        "user": "svc_reports"
+      },
+      "author": "it_admin",
+      "text": "svc_reports is a new service account for scheduled jobs."
+    },
+    "alerts": [
+      {
+        "id": "L-007-T",
+        "timestamp": "2026-11-22T08:57:00Z",
+        "rule": {
+          "id": "5716",
+          "level": 5,
+          "description": "sshd: authentication failed.",
+          "groups": [
+            "syslog",
+            "sshd",
+            "authentication_failed"
+          ]
+        },
+        "agent": {
+          "name": "files-01",
+          "ip": "10.0.4.40"
+        },
+        "data": {
+          "srcip": "10.0.3.30",
+          "srcuser": "svc_reports"
+        },
+        "full_log": "sshd: Failed password for svc_reports from 10.0.3.30 (key rotation window)",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "service_account_via_trusted_note",
+          "rationale": "Internal source, approved service account, single failure."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-007-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-008",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "SOC-2627",
+      "fact": {
+        "type": "approved_scanner",
+        "ip": "10.0.9.21"
+      },
+      "author": "netops",
+      "text": "New scanner 10.0.9.21 approved for weekly scans (ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-008-T",
+        "timestamp": "2026-11-21T08:23:00Z",
+        "rule": {
+          "id": "40101",
+          "level": 8,
+          "description": "Port scan detected.",
+          "groups": [
+            "firewall",
+            "recon"
+          ]
+        },
+        "agent": {
+          "name": "dc-01",
+          "ip": "10.0.5.50"
+        },
+        "data": {
+          "srcip": "10.0.9.21",
+          "ports_probed": 683
+        },
+        "full_log": "Port scan from 10.0.9.21 against 10.0.5.50",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "approved_scanner_via_trusted_note",
+          "rationale": "Scanner approved through the trusted analyst channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-008-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-009",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "SOC-1160",
+      "fact": {
+        "type": "approved_scanner",
+        "ip": "10.0.9.45"
+      },
+      "author": "netops",
+      "text": "New scanner 10.0.9.45 approved for weekly scans (ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-009-T",
+        "timestamp": "2026-11-21T08:49:00Z",
+        "rule": {
+          "id": "40101",
+          "level": 8,
+          "description": "Port scan detected.",
+          "groups": [
+            "firewall",
+            "recon"
+          ]
+        },
+        "agent": {
+          "name": "files-01",
+          "ip": "10.0.4.40"
+        },
+        "data": {
+          "srcip": "10.0.9.45",
+          "ports_probed": 547
+        },
+        "full_log": "Port scan from 10.0.9.45 against 10.0.4.40",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "approved_scanner_via_trusted_note",
+          "rationale": "Scanner approved through the trusted analyst channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-009-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-010",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "CHG-2946",
+      "fact": {
+        "type": "approved_backup_target",
+        "ip": "10.0.4.53"
+      },
+      "author": "it_admin",
+      "text": "Backup target 10.0.4.53 added (change ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-010-T",
+        "timestamp": "2026-11-12T08:43:00Z",
+        "rule": {
+          "id": "100300",
+          "level": 12,
+          "description": "Large outbound data transfer.",
+          "groups": [
+            "network",
+            "exfiltration"
+          ]
+        },
+        "agent": {
+          "name": "db-01",
+          "ip": "10.0.2.20"
+        },
+        "data": {
+          "srcip": "10.0.2.20",
+          "dstip": "10.0.4.53",
+          "bytes_out_mb": 5846,
+          "srcuser": "svc_backup"
+        },
+        "full_log": "netflow: 10.0.2.20 -> 10.0.4.53 (svc_backup nightly job)",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "backup_via_trusted_note",
+          "rationale": "Internal backup target approved through the trusted channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-010-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-011",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "CHG-7713",
+      "fact": {
+        "type": "approved_backup_target",
+        "ip": "10.0.4.56"
+      },
+      "author": "it_admin",
+      "text": "Backup target 10.0.4.56 added (change ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-011-T",
+        "timestamp": "2026-11-02T08:20:00Z",
+        "rule": {
+          "id": "100300",
+          "level": 12,
+          "description": "Large outbound data transfer.",
+          "groups": [
+            "network",
+            "exfiltration"
+          ]
+        },
+        "agent": {
+          "name": "db-01",
+          "ip": "10.0.2.20"
+        },
+        "data": {
+          "srcip": "10.0.2.20",
+          "dstip": "10.0.4.56",
+          "bytes_out_mb": 7769,
+          "srcuser": "svc_backup"
+        },
+        "full_log": "netflow: 10.0.2.20 -> 10.0.4.56 (svc_backup nightly job)",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "backup_via_trusted_note",
+          "rationale": "Internal backup target approved through the trusted channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-011-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-012",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "CHG-2794",
+      "fact": {
+        "type": "approved_backup_target",
+        "ip": "10.0.4.52"
+      },
+      "author": "it_admin",
+      "text": "Backup target 10.0.4.52 added (change ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-012-T",
+        "timestamp": "2026-11-21T08:14:00Z",
+        "rule": {
+          "id": "100300",
+          "level": 12,
+          "description": "Large outbound data transfer.",
+          "groups": [
+            "network",
+            "exfiltration"
+          ]
+        },
+        "agent": {
+          "name": "db-01",
+          "ip": "10.0.2.20"
+        },
+        "data": {
+          "srcip": "10.0.2.20",
+          "dstip": "10.0.4.52",
+          "bytes_out_mb": 4511,
+          "srcuser": "svc_backup"
+        },
+        "full_log": "netflow: 10.0.2.20 -> 10.0.4.52 (svc_backup nightly job)",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "backup_via_trusted_note",
+          "rationale": "Internal backup target approved through the trusted channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-012-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-013",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "IAM-8377",
+      "fact": {
+        "type": "service_account",
+        "user": "svc_patch"
+      },
+      "author": "it_admin",
+      "text": "svc_patch is a new service account for scheduled jobs."
+    },
+    "alerts": [
+      {
+        "id": "L-013-T",
+        "timestamp": "2026-11-05T09:27:00Z",
+        "rule": {
+          "id": "5716",
+          "level": 5,
+          "description": "sshd: authentication failed.",
+          "groups": [
+            "syslog",
+            "sshd",
+            "authentication_failed"
+          ]
+        },
+        "agent": {
+          "name": "files-01",
+          "ip": "10.0.4.40"
+        },
+        "data": {
+          "srcip": "10.0.5.50",
+          "srcuser": "svc_patch"
+        },
+        "full_log": "sshd: Failed password for svc_patch from 10.0.5.50 (key rotation window)",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "service_account_via_trusted_note",
+          "rationale": "Internal source, approved service account, single failure."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-013-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-014",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "SOC-1682",
+      "fact": {
+        "type": "approved_scanner",
+        "ip": "10.0.9.40"
+      },
+      "author": "netops",
+      "text": "New scanner 10.0.9.40 approved for weekly scans (ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-014-T",
+        "timestamp": "2026-11-18T08:54:00Z",
+        "rule": {
+          "id": "40101",
+          "level": 8,
+          "description": "Port scan detected.",
+          "groups": [
+            "firewall",
+            "recon"
+          ]
+        },
+        "agent": {
+          "name": "web-01",
+          "ip": "10.0.1.10"
+        },
+        "data": {
+          "srcip": "10.0.9.40",
+          "ports_probed": 264
+        },
+        "full_log": "Port scan from 10.0.9.40 against 10.0.1.10",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "approved_scanner_via_trusted_note",
+          "rationale": "Scanner approved through the trusted analyst channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-014-T",
+      "correct_decision": "close"
+    }
+  },
+  {
+    "sequence_id": "L-015",
+    "trusted_note": {
+      "channel": "analyst_ticket",
+      "trusted": true,
+      "ticket": "SOC-6252",
+      "fact": {
+        "type": "approved_scanner",
+        "ip": "10.0.9.56"
+      },
+      "author": "netops",
+      "text": "New scanner 10.0.9.56 approved for weekly scans (ticket attached)."
+    },
+    "alerts": [
+      {
+        "id": "L-015-T",
+        "timestamp": "2026-11-14T09:15:00Z",
+        "rule": {
+          "id": "40101",
+          "level": 8,
+          "description": "Port scan detected.",
+          "groups": [
+            "firewall",
+            "recon"
+          ]
+        },
+        "agent": {
+          "name": "files-01",
+          "ip": "10.0.4.40"
+        },
+        "data": {
+          "srcip": "10.0.9.56",
+          "ports_probed": 632
+        },
+        "full_log": "Port scan from 10.0.9.56 against 10.0.4.40",
+        "ground_truth": {
+          "label": "benign",
+          "scenario": "approved_scanner_via_trusted_note",
+          "rationale": "Scanner approved through the trusted analyst channel."
+        }
+      }
+    ],
+    "expected": {
+      "trigger_alert_id": "L-015-T",
+      "correct_decision": "close"
+    }
+  }
+]
