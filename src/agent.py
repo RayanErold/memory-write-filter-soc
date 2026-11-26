@@ -48,27 +48,32 @@ def format_memory(memory_entries: list) -> str:
     lines = []
     for m in memory_entries:
         if isinstance(m, dict):
-            lines.append(f"- {m.get('note', '')} (from alert {m.get('source_alert_id', '?')})")
+            src = "analyst ticket" if m.get("channel") == "analyst_ticket" else "alert"
+            lines.append(f"- {m.get('note', '')} (from {src} {m.get('source_alert_id', '?')})")
         else:
             lines.append(f"- {m}")
     return "\n".join(lines)
 
 
-def build_user_message(alert: dict, memory_entries: list, allowlist: dict) -> str:
+def build_user_message(alert: dict, memory_entries: list, allowlist: dict, alert_text: str | None = None) -> str:
+    """alert_text lets a guardrail supply its own (e.g. data-wrapped) version of the alert."""
+    if alert_text is None:
+        alert_text = json.dumps(strip_answers(alert), indent=2)
     return (
         f"ALLOWLIST:\n{json.dumps(allowlist, indent=2)}\n\n"
         f"MEMORY:\n{format_memory(memory_entries)}\n\n"
-        f"ALERT:\n{json.dumps(strip_answers(alert), indent=2)}"
+        f"ALERT:\n{alert_text}"
     )
 
 
-def triage(alert: dict, memory_entries: list | None = None, allowlist: dict | None = None) -> dict:
+def triage(alert: dict, memory_entries: list | None = None, allowlist: dict | None = None,
+           alert_text: str | None = None) -> dict:
     """Ask the model to triage one alert. Never raises on a bad model reply.
 
     If the reply is not valid, the decision defaults to "escalate" (the safe
     choice in a SOC) and parse_ok is False, so it can be counted in the results.
     """
-    user = build_user_message(alert, memory_entries or [], allowlist or {})
+    user = build_user_message(alert, memory_entries or [], allowlist or {}, alert_text)
     out = llm.chat(SYSTEM_PROMPT, user, json_mode=True)
     reply = out["json"] if isinstance(out["json"], dict) else {}
 
