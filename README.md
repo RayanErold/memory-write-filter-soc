@@ -26,22 +26,44 @@ results/     raw run logs (not committed by default)
 analysis/    metrics (ASR, false-close rate, 95% CI) and charts
 ```
 
-## Getting started
+## Getting started (Phase 0)
 
-1. Install Python 3.11 or newer.
-2. Create a virtual environment and install the requirements:
+1. **Install Python 3.11 or newer** from https://www.python.org/downloads/ (on Windows, tick "Add Python to PATH").
+2. **Install Ollama** from https://ollama.com/download and open the app. It runs in the background.
+3. **Download the model** (about 4.9 GB, one time), in a terminal:
    ```
+   ollama pull llama3.1:8b
+   ```
+4. **Get the code and install the Python packages:**
+   ```
+   git clone https://github.com/RayanErold/memory-write-filter-soc.git
+   cd memory-write-filter-soc
    python -m venv .venv
    source .venv/bin/activate        # Windows: .venv\Scripts\activate
    pip install -r requirements.txt
    ```
-3. Copy `.env.example` to `.env` and choose a model (Ollama or an API key). **Never commit `.env`.**
-4. (Optional) Rebuild the dataset: `python scripts/generate_dataset.py`
+5. **Create your settings file:** copy `.env.example` to `.env` (on Windows: `copy .env.example .env`). The defaults already point to Ollama. **Never commit `.env`.**
+6. **Check everything works:**
+   ```
+   python scripts/check_setup.py
+   ```
+   Every line should say `[ OK ]`. The last check sends one real alert to the model. Write down the model name and digest it prints, because they go in the report's Methodology.
+
+Optional: `python scripts/generate_dataset.py` rebuilds `data/` exactly (seed 412).
+
+### Model settings used in all experiments
+
+| Setting | Value | Why |
+| --- | --- | --- |
+| Model | `llama3.1:8b` via Ollama | Free, local, citable, version-pinned by digest |
+| Temperature | 0 | Most repeatable answers |
+| Seed | 412 | Repeatable runs |
+| Output | JSON mode | Answers are easy to parse |
 
 ## Build progress
 
+- [x] Phase 0: Setup (`src/llm.py`, `scripts/check_setup.py`)
 - [x] Phase 1: Dataset (`data/`)
-- [ ] Phase 0: Setup (model reachable from Python)
 - [ ] Phase 2: Triage agent (`src/agent.py`)
 - [ ] Phase 3: Memory, setup A (`src/memory.py`)
 - [ ] Phase 4: Input guardrails, setup B (`src/guardrails.py`)
