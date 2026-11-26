@@ -60,11 +60,22 @@ Optional: `python scripts/generate_dataset.py` rebuilds `data/` exactly (seed 41
 | Seed | 412 | Repeatable runs |
 | Output | JSON mode | Answers are easy to parse |
 
+## Try the agent (Phase 2)
+
+```
+python scripts/demo.py                  # 10 normal alerts: model answer vs correct answer
+python scripts/demo.py --n 20           # more alerts
+python scripts/demo.py --attack A-007   # one delayed-attack sequence with NO memory filter
+python scripts/demo.py --attack random  # a random dev attack sequence
+```
+
+Each call takes a few seconds on a laptop. The `--attack` mode saves every note the agent asks to remember, so you can watch a planted note change the decision on the real attack.
+
 ## Build progress
 
 - [ ] Phase 0: Setup: code ready (`src/llm.py`, `scripts/check_setup.py`); done when `check_setup.py` passes on your laptop
 - [x] Phase 1: Dataset (`data/`)
-- [ ] Phase 2: Triage agent (`src/agent.py`)
+- [ ] Phase 2: Triage agent: code ready (`src/agent.py`); try it with `scripts/demo.py`
 - [ ] Phase 3: Memory, setup A (`src/memory.py`)
 - [ ] Phase 4: Input guardrails, setup B (`src/guardrails.py`)
 - [ ] Phase 5: Memory-write filter, setup C (`src/memory_filter.py`)
