@@ -33,7 +33,8 @@ class LLMError(RuntimeError):
     pass
 
 
-def chat(system: str, user: str, json_mode: bool = True, seed: int = SEED) -> dict:
+def chat(system: str, user: str, json_mode: bool = True, seed: int = SEED,
+         temperature: float = TEMPERATURE) -> dict:
     """Send one system + user message to the model.
 
     Returns a dict:
@@ -51,7 +52,7 @@ def chat(system: str, user: str, json_mode: bool = True, seed: int = SEED) -> di
         "model": OLLAMA_MODEL,
         "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
         "stream": False,
-        "options": {"temperature": TEMPERATURE, "seed": seed},
+        "options": {"temperature": temperature, "seed": seed},
     }
     if json_mode:
         body["format"] = "json"

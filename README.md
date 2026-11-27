@@ -68,10 +68,25 @@ python scripts/demo.py --n 20           # more alerts
 python scripts/demo.py --attack A-007   # one delayed-attack sequence with NO memory filter
 python scripts/demo.py --attack random  # a random dev attack sequence
 python scripts/demo.py --attack A-007 --setup B   # same attack with input-only guardrails
+python scripts/demo.py --attack A-007 --setup C   # same attack with guardrails + memory-write filter
 python scripts/guardrail_coverage.py    # which poison alerts the guardrails catch (no model needed)
 ```
 
 Each call takes a few seconds on a laptop. The `--attack` mode saves every note the agent asks to remember, so you can watch a planted note change the decision on the real attack.
+
+## Run the experiment (Phases 6 and 7)
+
+```
+python src/run_experiment.py --quick     # 2-minute smoke test (10 items per setup)
+python src/run_experiment.py             # full run: setups A, B, C on all data (~1,600 model calls, a few hours)
+python analysis/compute_metrics.py       # results table -> results/summary_<date>.md and .csv
+python analysis/make_charts.py           # charts -> results/charts/
+```
+
+- The full run can be stopped with Ctrl+C and resumed by running the same command again.
+- Every alert is logged to `results/run_<date>_<setup>_rep1.jsonl`: decision, correct answer, guardrail findings, memory writes (requested, saved, dropped), time and tokens.
+- 95% confidence intervals are bootstrapped over sequences, so one run is enough. `--reps 3 --temperature 0.7` adds repeated runs if you want them.
+- `results/` is not committed by default. To keep the final run in the repo: `git add -f results/summary_* results/charts results/run_<date>_*`.
 
 ## Build progress
 
@@ -80,9 +95,9 @@ Each call takes a few seconds on a laptop. The `--attack` mode saves every note 
 - [ ] Phase 2: Triage agent: code ready (`src/agent.py`); try it with `scripts/demo.py`
 - [x] Phase 3: Memory, setup A (`src/memory.py`)
 - [x] Phase 4: Input guardrails, setup B (`src/guardrails.py`, coverage check: `scripts/guardrail_coverage.py`)
-- [ ] Phase 5: Memory-write filter, setup C (`src/memory_filter.py`)
-- [ ] Phase 6: Run the experiment (`src/run_experiment.py`)
-- [ ] Phase 7: Analysis (`analysis/`)
+- [x] Phase 5: Memory-write filter, setup C (`src/memory_filter.py`)
+- [ ] Phase 6: Run the experiment: code ready (`src/run_experiment.py`); done when the full run finishes on your laptop
+- [ ] Phase 7: Analysis: code ready (`analysis/compute_metrics.py`, `analysis/make_charts.py`)
 
 ## Team rules
 
