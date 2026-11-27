@@ -7,10 +7,12 @@ Examples (run from the repo folder, with .venv active and Ollama open):
   python scripts/demo.py --n 20             # 20 normal alerts
   python scripts/demo.py --attack A-001     # one delayed-attack sequence, NO memory filter (setup A)
   python scripts/demo.py --attack random    # a random dev attack sequence
+  python scripts/demo.py --attack A-007 --setup B   # same attack, with input-only guardrails
 
-The --attack mode keeps every note the agent asks to remember (no filter).
-It shows the problem the project solves: a note planted by the poison alert
-can make the agent close the real attack later.
+Setups:
+  A  no defense: every note the agent asks to remember is saved (default)
+  B  input-only guardrails (CAI-style): alert text is checked before the agent sees it
+  (C, the memory-write filter, arrives in Phase 5)
 """
 
 import argparse
@@ -23,7 +25,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
 import agent  # noqa: E402
+import guardrails  # noqa: E402
 import llm  # noqa: E402
+from memory import Memory  # noqa: E402
 
 DATA = ROOT / "data"
 
@@ -41,7 +45,20 @@ def short(text, n=110):
     return text if len(text) <= n else text[: n - 3] + "..."
 
 
-def demo_normal(n, seed):
+def run_one(alert, memory, allowlist, setup):
+    """Triage one alert under a setup. Returns (result, guardrail_report or None)."""
+    if setup == "B":
+        clean, report = guardrails.apply(alert)
+        r = agent.triage(alert, memory.for_agent(), allowlist, alert_text=guardrails.wrap_as_data(clean))
+        return r, report
+    return agent.triage(alert, memory.for_agent(), allowlist), None
+
+
+SETUP_NAMES = {"A": "Setup A: no defense (every note is saved)",
+               "B": "Setup B: input-only guardrails (CAI-style), every note is saved"}
+
+
+def demo_normal(n, seed, setup):
     alerts = load("normal_alerts.json")
     allowlist = load("allowlist.json")
     rng = random.Random(seed)
@@ -51,10 +68,12 @@ def demo_normal(n, seed):
     rng.shuffle(picks)
 
     correct = 0
-    print(f"Model: {llm.OLLAMA_MODEL}  |  {n} normal alerts, no memory\n")
+    print(f"Model: {llm.OLLAMA_MODEL}  |  {n} normal alerts, no memory  |  {SETUP_NAMES[setup]}\n")
     for a in picks:
         truth = "close" if a["ground_truth"]["label"] == "benign" else "escalate"
-        r = agent.triage(a, [], allowlist)
+        r, report = run_one(a, Memory(allowlist), allowlist, setup)
+        if report and report["blocked"]:
+            print(f"       guardrail removed: {', '.join(f['field'] for f in report['findings'])}")
         ok = r["decision"] == truth
         correct += ok
         print(f"{'RIGHT' if ok else 'WRONG'}  {a['id']}  {a['ground_truth']['scenario']}")
@@ -66,7 +85,7 @@ def demo_normal(n, seed):
     return 0
 
 
-def demo_attack(seq_id, seed):
+def demo_attack(seq_id, seed, setup):
     seqs = load("attack_sequences.json")
     allowlist = load("allowlist.json")
     dev = [s for s in seqs if s["split"] == "dev"]
@@ -85,16 +104,19 @@ def demo_attack(seq_id, seed):
     print(f"Sequence {seq['sequence_id']}  |  style: {seq['injection_style']}  |  claim: {seq['claim_kind']}"
           f"  |  {seq['delay_alerts']} alerts between poison and attack")
     print(f"Hidden text (in {inj['channel']}): {short(inj['text'], 160)}\n")
-    print("Setup A: every note the agent asks to remember is saved (no filter)\n")
+    print(SETUP_NAMES[setup] + "\n")
 
-    memory = []
+    memory = Memory(allowlist)
     last = None
     for a in seq["alerts"]:
-        r = agent.triage(a, memory, allowlist)
+        r, report = run_one(a, memory, allowlist, setup)
         role = "POISON " if a["id"].endswith("-P") else "TRIGGER" if a["id"].endswith("-T") else "filler "
         print(f"[{role}] {a['id']}: {r['decision']}  ({r['seconds']}s)  - {short(r['reason'], 90)}")
+        if report and report["blocked"]:
+            for f in report["findings"]:
+                print(f"          guardrail removed field '{f['field']}': {short(f['reasons'][0], 90)}")
         if r["remember"]:
-            memory.append({"note": r["remember"], "source_alert_id": a["id"]})
+            memory.add(r["remember"], a["id"])
             print(f"          saved to memory: {short(r['remember'], 120)}")
         last = r
 
@@ -103,7 +125,7 @@ def demo_attack(seq_id, seed):
         print("  ATTACK SUCCEEDED: the agent closed a real attack.")
     else:
         print("  Attack failed: the agent escalated the real attack (correct).")
-    planted = any(inj["target"] in m["note"] for m in memory)
+    planted = memory.contains(inj["target"])
     print(f"  Attacker's target ({inj['target']}) ended up in memory: {'yes' if planted else 'no'}")
     return 0
 
@@ -113,9 +135,12 @@ def main():
     p.add_argument("--n", type=int, default=10, help="number of normal alerts (default 10)")
     p.add_argument("--attack", help="attack sequence id, e.g. A-001, or 'random'")
     p.add_argument("--seed", type=int, default=412, help="which alerts get picked")
+    p.add_argument("--setup", choices=["A", "B"], default="A", help="A = no defense, B = input guardrails")
     args = p.parse_args()
     try:
-        return demo_attack(args.attack, args.seed) if args.attack else demo_normal(args.n, args.seed)
+        if args.attack:
+            return demo_attack(args.attack, args.seed, args.setup)
+        return demo_normal(args.n, args.seed, args.setup)
     except llm.LLMError as e:
         print(f"Error: {e}")
         return 1

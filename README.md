@@ -67,6 +67,8 @@ python scripts/demo.py                  # 10 normal alerts: model answer vs corr
 python scripts/demo.py --n 20           # more alerts
 python scripts/demo.py --attack A-007   # one delayed-attack sequence with NO memory filter
 python scripts/demo.py --attack random  # a random dev attack sequence
+python scripts/demo.py --attack A-007 --setup B   # same attack with input-only guardrails
+python scripts/guardrail_coverage.py    # which poison alerts the guardrails catch (no model needed)
 ```
 
 Each call takes a few seconds on a laptop. The `--attack` mode saves every note the agent asks to remember, so you can watch a planted note change the decision on the real attack.
@@ -76,8 +78,8 @@ Each call takes a few seconds on a laptop. The `--attack` mode saves every note 
 - [ ] Phase 0: Setup: code ready (`src/llm.py`, `scripts/check_setup.py`); done when `check_setup.py` passes on your laptop
 - [x] Phase 1: Dataset (`data/`)
 - [ ] Phase 2: Triage agent: code ready (`src/agent.py`); try it with `scripts/demo.py`
-- [ ] Phase 3: Memory, setup A (`src/memory.py`)
-- [ ] Phase 4: Input guardrails, setup B (`src/guardrails.py`)
+- [x] Phase 3: Memory, setup A (`src/memory.py`)
+- [x] Phase 4: Input guardrails, setup B (`src/guardrails.py`, coverage check: `scripts/guardrail_coverage.py`)
 - [ ] Phase 5: Memory-write filter, setup C (`src/memory_filter.py`)
 - [ ] Phase 6: Run the experiment (`src/run_experiment.py`)
 - [ ] Phase 7: Analysis (`analysis/`)
