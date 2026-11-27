@@ -12,7 +12,7 @@ Examples (run from the repo folder, with .venv active and Ollama open):
 Setups:
   A  no defense: every note the agent asks to remember is saved (default)
   B  input-only guardrails (CAI-style): alert text is checked before the agent sees it
-  (C, the memory-write filter, arrives in Phase 5)
+  C  input guardrails + memory-write filter: every note is filtered before it is saved
 """
 
 import argparse
@@ -26,6 +26,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import agent  # noqa: E402
 import guardrails  # noqa: E402
+import memory_filter  # noqa: E402
 import llm  # noqa: E402
 from memory import Memory  # noqa: E402
 
@@ -47,15 +48,17 @@ def short(text, n=110):
 
 def run_one(alert, memory, allowlist, setup):
     """Triage one alert under a setup. Returns (result, guardrail_report or None)."""
-    if setup == "B":
+    if setup in ("B", "C"):
         clean, report = guardrails.apply(alert)
-        r = agent.triage(alert, memory.for_agent(), allowlist, alert_text=guardrails.wrap_as_data(clean))
+        r = agent.triage(alert, memory.for_agent(), allowlist, alert_text=guardrails.wrap_as_data(clean),
+                         memory_view="labeled" if setup == "C" else "plain")
         return r, report
     return agent.triage(alert, memory.for_agent(), allowlist), None
 
 
 SETUP_NAMES = {"A": "Setup A: no defense (every note is saved)",
-               "B": "Setup B: input-only guardrails (CAI-style), every note is saved"}
+               "B": "Setup B: input-only guardrails (CAI-style), every note is saved",
+               "C": "Setup C: input guardrails + memory-write filter"}
 
 
 def demo_normal(n, seed, setup):
@@ -115,7 +118,16 @@ def demo_attack(seq_id, seed, setup):
         if report and report["blocked"]:
             for f in report["findings"]:
                 print(f"          guardrail removed field '{f['field']}': {short(f['reasons'][0], 90)}")
-        if r["remember"]:
+        if r["remember"] and setup == "C":
+            f = memory_filter.apply(memory, r["remember"], a, r["decision"])
+            print(f"          agent asked to save: {short(r['remember'], 110)}")
+            for e in f["save"]:
+                print(f"          filter saved:   {short(e['note'], 110)}")
+            if f["dropped_claim"]:
+                print("          filter dropped: trust/approval claim (agent notes are never trusted)")
+            elif not f["save"]:
+                print(f"          filter saved nothing: {f['reason']}")
+        elif r["remember"]:
             memory.add(r["remember"], a["id"])
             print(f"          saved to memory: {short(r['remember'], 120)}")
         last = r
@@ -126,7 +138,14 @@ def demo_attack(seq_id, seed, setup):
     else:
         print("  Attack failed: the agent escalated the real attack (correct).")
     planted = memory.contains(inj["target"])
-    print(f"  Attacker's target ({inj['target']}) ended up in memory: {'yes' if planted else 'no'}")
+    poisoned = any(memory_filter.is_contaminated(e, inj["target"]) for e in memory.entries)
+    if not planted:
+        status = "no"
+    elif poisoned:
+        status = "yes, with the attacker's approval claim (memory poisoned)"
+    else:
+        status = "yes, but only as an unverified observation (no approval claim)"
+    print(f"  Attacker's target ({inj['target']}) ended up in memory: {status}")
     return 0
 
 
@@ -135,7 +154,8 @@ def main():
     p.add_argument("--n", type=int, default=10, help="number of normal alerts (default 10)")
     p.add_argument("--attack", help="attack sequence id, e.g. A-001, or 'random'")
     p.add_argument("--seed", type=int, default=412, help="which alerts get picked")
-    p.add_argument("--setup", choices=["A", "B"], default="A", help="A = no defense, B = input guardrails")
+    p.add_argument("--setup", choices=["A", "B", "C"], default="A",
+                   help="A = no defense, B = input guardrails, C = guardrails + memory filter")
     args = p.parse_args()
     try:
         if args.attack:
